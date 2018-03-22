@@ -1,12 +1,14 @@
 <?php
-
 namespace Corcel\Laravel;
-
 use Auth;
 use Corcel\Corcel;
 use Corcel\Laravel\Auth\AuthUserProvider;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Corcel\Model\Post;
+use Corcel\Model\Page;
+use Corcel\Model\CustomLink;
+use Corcel\Model\Taxonomy;
 /**
  * Class CorcelServiceProvider
  *
@@ -23,8 +25,8 @@ class CorcelServiceProvider extends ServiceProvider
     {
         $this->publishConfigFile();
         $this->registerAuthProvider();
+        $this->registerMorphMaps();
     }
-
     /**
      * @return void
      */
@@ -34,7 +36,6 @@ class CorcelServiceProvider extends ServiceProvider
             __DIR__ . '/config.php' => base_path('config/corcel.php'),
         ]);
     }
-
     /**
      * @return void
      */
@@ -46,7 +47,20 @@ class CorcelServiceProvider extends ServiceProvider
             });
         }
     }
-
+    /**
+     * register morph maps for polymorphic relations
+     *
+     * @return void
+     */
+    public function registerMorphMaps()
+    {
+        Relation::morphMap([
+            'post' => Post::class,
+            'page' => Page::class,
+            'custom' => CustomLink::class,
+            'category' => Taxonomy::class,
+        ]);
+    }
     /**
      * @return void
      */
